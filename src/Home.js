@@ -11,6 +11,9 @@ export default function Home() {
     }, [] ) ;
   
     return <>
+    <div className="text-center">
+        <h1 className="display-4">Крамниця</h1>
+    </div>
     <div className='d-flex'>
       {categories.map(c => <Link to={"/category/" + c.slug} key={c.id} className='card mx-3' style={{"width": "12rem"}}>
         <img src={c.imagesCsv.split(',')[0]} alt='CategoryLogo' className="card-img-top" />
