@@ -1,16 +1,24 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { AppContext } from "./App";
 
 export default function Home() {
-    const [categories, setCategories] = useState([]);
-    useEffect( () => {
-      fetch("https://localhost:7048/api/category")
-      .then(r => r.json()).then(j => {
-        setCategories( j.data.categories );
-      });
-    }, [] ) ;
-  
-    return <>
+  const {request} = useContext(AppContext);   // ~~ Injection
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect( () => {
+    request( "/api/category" )
+    .then( data => setCategories( data.categories ))
+    .catch( console.error );
+    
+    // fetch("https://localhost:7048/api/category")
+    // .then(r => r.json()).then(j => {
+    //   setCategories( j.data.categories );
+    // });
+  }, [] ) ;
+
+  return <>
     <div className="text-center">
         <h1 className="display-4">Крамниця</h1>
     </div>

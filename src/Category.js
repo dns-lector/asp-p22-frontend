@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {  Link, useParams } from "react-router-dom";
+import { AppContext } from "./App";
+
 
 export default function Category() {
+    const {request} = useContext(AppContext); 
     const {id} = useParams();
     const [category, setCategory] = useState({
       "id": "",
@@ -13,10 +16,13 @@ export default function Category() {
     });
 
     useEffect( () => {
-        fetch("https://localhost:7048/api/category/" + id)
-        .then(r => r.json()).then(j => {
-            setCategory( j.data.category );
-        });
+      request( "/api/category/" + id )
+      .then( data => setCategory( data.category ) )
+      .catch( console.error );
+        // fetch("https://localhost:7048/api/category/" + id)
+        // .then(r => r.json()).then(j => {
+        //     setCategory( j.data.category );
+        // });
     }, [id] ) ;
   
     return <>

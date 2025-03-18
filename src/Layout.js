@@ -1,8 +1,10 @@
 import { Link, Outlet } from "react-router-dom";
 import "./Layout.css"
+import { useContext, useState } from "react";
+import { AppContext } from "./App";
 
 export default function Layout() {
-    return <div>
+    return <div className="page-container">
         <header>
             <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div className="container-fluid">
@@ -32,17 +34,68 @@ export default function Layout() {
             </nav>
         </header>
 
-        <div className="container">
+        <section className="container">
             <main role="main" className="pb-3">
                 <Outlet />
             </main>
-        </div>
+        </section>
         
         <footer className="border-top footer text-muted">
             <div className="container">
                 &copy; 2024 - ASP-P22 - <Link to="/">Угода</Link>
             </div>
-        </footer>
-            
+        </footer>    
+        <AuthModal />
     </div>;
+}
+
+function AuthModal() {
+    const {request} = useContext(AppContext);
+    const [login, setLogin] = useState("");
+    const [password, setPassword] = useState("");
+
+    const authenticateClick = () => {
+        console.log(login, password);
+        // RFC 7617
+        const credentials = btoa(login + ':' + password);
+        request("/api/user", {
+            method: "GET",
+            headers: {
+                'Authorization': 'Basic ' + credentials
+            }
+        }).then(console.log).catch(console.error);
+    };
+
+    return <div className="modal fade" id="authModal" tabIndex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+    <div className="modal-dialog">
+        <div className="modal-content">
+            <div className="modal-header">
+                <h1 className="modal-title fs-5" id="authModalLabel">Автентифікація</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+                <form id="auth-form">
+                    <div className="input-group mb-3">
+                        <span className="input-group-text" id="auth-login-addon"><i className="bi bi-key"></i></span>
+                        <input type="text" className="form-control " placeholder="Логін"
+                               value={login}
+                               onChange={e => setLogin(e.target.value)}
+                               aria-label="Login" aria-describedby="auth-login-addon"/>
+                    </div>
+                    <div className="input-group mb-3">
+                        <span className="input-group-text" id="auth-password1-addon"><i className="bi bi-lock"></i></span>
+                        <input type="password" className="form-control" placeholder="*********" 
+                               value={password}
+                               onChange={e => setPassword(e.target.value)}
+                               aria-label="Password" aria-describedby="auth-password1-addon"/>
+                    </div>
+                </form>
+            </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <button type="button" onClick={authenticateClick} className="btn btn-primary">Вхід</button>
+            </div>
+        </div>
+    </div>
+</div>;
 }
