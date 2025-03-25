@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import {  Link, useParams } from "react-router-dom";
-import { AppContext } from "./App";
+import { AppContext } from "../../App";
+import './Category.css';
 
 
 export default function Category() {
@@ -49,7 +50,7 @@ export default function Category() {
             <img src={product.imagesCsv.split(',')[0]} className="card-img-top" alt="ProductImage"/>
         </Link>
         <div className="card-body">
-            <div data-cart-product="@Model.Id" className="card-fab"><i className="bi bi-cart-plus"></i></div>
+            <div className="card-fab"><i className="bi bi-cart-plus"></i></div>
 
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">{product.description}</p>

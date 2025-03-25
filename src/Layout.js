@@ -1,9 +1,11 @@
 import { Link, Outlet } from "react-router-dom";
 import "./Layout.css"
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { AppContext } from "./App";
 
 export default function Layout() {
+    const { token, setToken } = useContext(AppContext);
+
     return <div className="page-container">
         <header>
             <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -23,11 +25,15 @@ export default function Layout() {
                         </li>
                     </ul>
             
-                    <div className="auth-block">                                        
+                    <div className="auth-block">  
+                        {!token && <>                                    
                             <Link to="/" className="btn btn-outline-dark"><i className="bi bi-person-plus"></i></Link>
                             <button type="button" className="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#authModal">
                                 <i className="bi bi-box-arrow-in-right"></i>
-                            </button>
+                            </button></>  }
+                        {!!token && <>
+                            <i className="bi bi-box-arrow-right" onClick={() => setToken(null)}></i>
+                        </>}
                         </div>
                     </div>
                 </div>
@@ -50,9 +56,10 @@ export default function Layout() {
 }
 
 function AuthModal() {
-    const {request} = useContext(AppContext);
+    const {request, setToken} = useContext(AppContext);
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
+    const closeButtonRef = useRef();
 
     const authenticateClick = () => {
         console.log(login, password);
@@ -63,7 +70,11 @@ function AuthModal() {
             headers: {
                 'Authorization': 'Basic ' + credentials
             }
-        }).then(console.log).catch(console.error);
+        }).then(data => {
+            setToken(data);
+            closeButtonRef.current.click();
+        })
+        .catch(console.error);
     };
 
     return <div className="modal fade" id="authModal" tabIndex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
@@ -92,7 +103,7 @@ function AuthModal() {
                 </form>
             </div>
             <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <button type="button" ref={closeButtonRef} className="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
                 <button type="button" onClick={authenticateClick} className="btn btn-primary">Вхід</button>
             </div>
         </div>
