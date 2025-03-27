@@ -44,13 +44,32 @@ export default function Category() {
   }
   
   function ProductCard({product}) {
+    const {request, token, setToken} = useContext(AppContext); 
+
+    const addToCartClick = e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if(!token) {
+        alert("Авторизуйтесь для створення кошику");
+      }
+      else {
+        request("/api/cart?productId=" + product.id, { method: 'POST' })
+          .then(console.log)
+          .catch(j => {
+            if(j.status.code === 401) {
+              setToken(null);
+            }
+          });
+      }      
+    };
+
     return <div className="col">
     <div className="card mx-3 h-100">
         <Link to={"/product/" + (product.slug || product.id)} >
             <img src={product.imagesCsv.split(',')[0]} className="card-img-top" alt="ProductImage"/>
         </Link>
         <div className="card-body">
-            <div className="card-fab"><i className="bi bi-cart-plus"></i></div>
+            <div className="card-fab" onClick={addToCartClick}><i className="bi bi-cart-plus"></i></div>
 
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">{product.description}</p>

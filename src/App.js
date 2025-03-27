@@ -5,6 +5,7 @@ import Category from './views/category/Category';
 import Layout from './Layout';
 import Product from './views/product/Product';
 import { createContext, useState } from 'react';
+import Cart from './views/cart/Cart';
 
 export const AppContext = createContext(null);  // ~~ Builder.Services
 
@@ -52,9 +53,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />} >
-          <Route index element={<Home />} />
+          <Route index               element={<Home />    } />
+          <Route path="cart"         element={<Cart />    } />
           <Route path="category/:id" element={<Category />} />
-          <Route path="product/:id" element={<Product />} />
+          <Route path="product/:id"  element={<Product /> } />
         </Route>
       </Routes>
     </BrowserRouter>

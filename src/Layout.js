@@ -27,12 +27,17 @@ export default function Layout() {
             
                     <div className="auth-block">  
                         {!token && <>                                    
-                            <Link to="/" className="btn btn-outline-dark"><i className="bi bi-person-plus"></i></Link>
+                            <Link to="/" className="btn btn-outline-dark">
+                                <i className="bi bi-person-plus"></i>
+                            </Link>
                             <button type="button" className="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#authModal">
                                 <i className="bi bi-box-arrow-in-right"></i>
                             </button></>  }
                         {!!token && <>
-                            <i className="bi bi-box-arrow-right" onClick={() => setToken(null)}></i>
+                            <Link to="/cart" className="btn btn-outline-dark"><i className="bi bi-cart"></i></Link>
+                            <button type="button" className="btn btn-outline-primary" onClick={() => setToken(null)}>
+                                <i className="bi bi-box-arrow-right"></i>
+                            </button>
                         </>}
                         </div>
                     </div>
@@ -62,7 +67,7 @@ function AuthModal() {
     const closeButtonRef = useRef();
 
     const authenticateClick = () => {
-        console.log(login, password);
+        // console.log(login, password);
         // RFC 7617
         const credentials = btoa(login + ':' + password);
         request("/api/user", {
