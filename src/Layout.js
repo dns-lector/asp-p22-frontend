@@ -6,6 +6,8 @@ import { AppContext } from "./App";
 export default function Layout() {
     const { token, setToken } = useContext(AppContext);
 
+    const userName = !token ? "" : JSON.parse( atob( token.split('.')[1] ) ).Name;
+
     return <div className="page-container">
         <header>
             <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -34,6 +36,7 @@ export default function Layout() {
                                 <i className="bi bi-box-arrow-in-right"></i>
                             </button></>  }
                         {!!token && <>
+                            <span>{userName}</span>
                             <Link to="/cart" className="btn btn-outline-dark"><i className="bi bi-cart"></i></Link>
                             <button type="button" className="btn btn-outline-primary" onClick={() => setToken(null)}>
                                 <i className="bi bi-box-arrow-right"></i>
@@ -76,6 +79,10 @@ function AuthModal() {
                 'Authorization': 'Basic ' + credentials
             }
         }).then(data => {
+            let [_, payload] = data.split('.');
+            payload = JSON.parse( atob(payload) );
+            console.log(payload.Exp);
+            window.localStorage.setItem("token22", data);
             setToken(data);
             closeButtonRef.current.click();
         })
