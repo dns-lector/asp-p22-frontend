@@ -4,13 +4,55 @@ import Home from './Home';
 import Category from './views/category/Category';
 import Layout from './Layout';
 import Product from './views/product/Product';
-import { createContext, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import Cart from './views/cart/Cart';
 
 export const AppContext = createContext(null);  // ~~ Builder.Services
 
 function App() {
   const [token, setToken] = useState(null);
+
+  const authenticate = (t) => {
+    if(t && checkTokenExp(t)) {
+        window.localStorage.setItem("token22", t);
+    }
+    else {
+      window.localStorage.removeItem("token22");
+      t = null;
+    }
+    // console.log("token set", t);
+    setToken(t);
+  };
+
+  const checkTokenExp = (t) => {
+    let res;
+    if(t) {
+      let [_, payload] = t.split('.');
+      payload = JSON.parse( atob(payload) );
+      let d = new Date(payload.Exp);
+      res = ( d > new Date() );
+    }
+    else res = false;
+    // console.log("checkTokenExp", res);
+    return res;
+  };
+
+  const tick = useCallback( () => {
+      // console.log('tick', token);
+      if(token && !checkTokenExp(token)) {
+        authenticate(null);
+      }
+    }, [token]);
+
+  useEffect(() => {
+    var savedToken = window.localStorage.getItem("token22");
+    if(savedToken) {      
+      authenticate(savedToken);
+    }
+    const handle = setInterval( tick, 1000 );
+
+    return () => {clearInterval(handle);};
+  }, [token]);
 
   const request = (url, conf) => url.startsWith('/') ? 
     new Promise( (resolve, reject) => {    
@@ -49,7 +91,7 @@ function App() {
       fetch( url, conf );
 
   //                                     | ~~ AddScoped(request)
-  return <AppContext.Provider value={ {request, token, setToken} }> 
+  return <AppContext.Provider value={ {request, token, authenticate} }> 
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />} >

@@ -4,7 +4,7 @@ import { useContext, useRef, useState } from "react";
 import { AppContext } from "./App";
 
 export default function Layout() {
-    const { token, setToken } = useContext(AppContext);
+    const { token, authenticate } = useContext(AppContext);
 
     const userName = !token ? "" : JSON.parse( atob( token.split('.')[1] ) ).Name;
 
@@ -38,7 +38,7 @@ export default function Layout() {
                         {!!token && <>
                             <span>{userName}</span>
                             <Link to="/cart" className="btn btn-outline-dark"><i className="bi bi-cart"></i></Link>
-                            <button type="button" className="btn btn-outline-primary" onClick={() => setToken(null)}>
+                            <button type="button" className="btn btn-outline-primary" onClick={() => authenticate(null)}>
                                 <i className="bi bi-box-arrow-right"></i>
                             </button>
                         </>}
@@ -64,7 +64,7 @@ export default function Layout() {
 }
 
 function AuthModal() {
-    const {request, setToken} = useContext(AppContext);
+    const {request, authenticate} = useContext(AppContext);
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const closeButtonRef = useRef();
@@ -79,11 +79,7 @@ function AuthModal() {
                 'Authorization': 'Basic ' + credentials
             }
         }).then(data => {
-            let [_, payload] = data.split('.');
-            payload = JSON.parse( atob(payload) );
-            console.log(payload.Exp);
-            window.localStorage.setItem("token22", data);
-            setToken(data);
+            authenticate(data);
             closeButtonRef.current.click();
         })
         .catch(console.error);
